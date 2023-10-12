@@ -1,0 +1,14 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Spring Boot-MyassetApplication<myasset>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.vueSpring.myasset.MyassetApplication",
+      "projectName": "myasset",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ]
+}
