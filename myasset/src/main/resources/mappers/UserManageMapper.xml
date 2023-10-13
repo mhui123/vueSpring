@@ -20,6 +20,6 @@
     ,#{mailAddr}
     ,#{addr}
     ,#{marketingYn}
-    )
+    )   
     </insert>
 </mapper>
