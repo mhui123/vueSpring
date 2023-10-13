@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.mybatis.logging.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.vueSpring.myasset.impl.MyassetServiceImpl;
+import com.vueSpring.myasset.impl.UserManageServiceImpl;
 import com.vueSpring.myasset.vo.UserInfoVo;
 
 @Controller
@@ -23,8 +25,11 @@ import com.vueSpring.myasset.vo.UserInfoVo;
 public class MyassetController {
     @Autowired
     private MyassetServiceImpl impl;
+    @Autowired
+    private UserManageServiceImpl userImpl;
 
     private final Logger log = LogManager.getLogger(MyassetController.class);
+    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @ResponseBody
     @PostMapping("/test")
@@ -44,21 +49,57 @@ public class MyassetController {
 
     @ResponseBody
     @PostMapping("/login")
-    public boolean login(@RequestBody Map<String, Object> param) {
+    public Map<String, Object> login(@RequestBody Map<String, Object> param) {
         log.info("login test");
-        boolean result = false;
         UserInfoVo vo = new UserInfoVo();
-        vo.setId((String) param.get("id"));
-        vo.setPw((String) param.get("pw"));
-        UserInfoVo loginResult = impl.getUserInfo(vo);
+        Map<String, Object> resultMap = new HashMap<>();
 
-        if (loginResult != null) {
-            result = true;
-            log.info(loginResult.getId() + "의 계정정보 불러오기 성공");
+        log.info("password 암호화 확인 : " + encoder.encode((CharSequence) param.get("pw")));
+
+        vo.setId(String.valueOf(param.get("id")));
+        UserInfoVo userData = userImpl.getUserInfo(vo);
+
+        if (userData != null) {
+            String rawPw = String.valueOf(param.get("pw"));
+            boolean matchResult = encoder.matches(rawPw, String.valueOf(userData.getPw()));
+            if (matchResult) {
+                userData.setPw("");
+                resultMap.put("userData", userData);
+            }
         } else {
-            log.info("계정정보 불러오기 실패");
+            // 유저데이터 없음
+            resultMap.put("userData", null);
         }
+        return resultMap;
+    }
 
-        return result;
+    @ResponseBody
+    @PostMapping("/register")
+    public Map<String, Object> registUser(@RequestBody Map<String, Object> param) {
+        log.info("register!!!!!!!!!!!!!!!!!!!!!");
+        String rawPw = String.valueOf(param.get("pw"));
+        String encPw = encoder.encode(rawPw);
+
+        log.info("encPw : " + encPw);
+        UserInfoVo vo = new UserInfoVo();
+        vo.setId(String.valueOf(param.get("id")));
+        vo.setPw(encPw);
+        vo.setAddr(String.valueOf(param.get("userAddr")));
+        vo.setMailAddr(String.valueOf(param.get("userMail")));
+        vo.setUserTel(String.valueOf(param.get("userTel")));
+        vo.setUserNm(String.valueOf(param.get("userName")));
+        vo.setUserAge(String.valueOf(param.get("userAge")));
+        vo.setMarketingYn("Y");
+        int regResult = userImpl.registUser(vo);
+        String toSendResult = "";
+        if (regResult == 1) {
+            toSendResult = "SUCCESS";
+        } else {
+            toSendResult = "FAIL";
+        }
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("result", toSendResult);
+
+        return resultMap;
     }
 }
