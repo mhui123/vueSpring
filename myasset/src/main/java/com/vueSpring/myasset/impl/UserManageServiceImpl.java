@@ -33,4 +33,9 @@ public class UserManageServiceImpl implements UserManageService {
         return mapper.selectUserInfo(vo);
     }
 
+    @Override
+    public int getIdCount(UserInfoVo vo) {
+        return mapper.selectIdCount(vo);
+    }
+
 }

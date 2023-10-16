@@ -8,5 +8,7 @@ import com.vueSpring.myasset.vo.UserInfoVo;
 public interface UserManageMapper {
     int insertUserInfo(UserInfoVo vo);
 
+    int selectIdCount(UserInfoVo vo);
+
     UserInfoVo selectUserInfo(UserInfoVo vo);
 }

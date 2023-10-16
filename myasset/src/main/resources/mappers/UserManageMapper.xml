@@ -5,21 +5,27 @@
         select * from user_info_m uim 
         where id = #{id}
     </select>
+
+    <select id="selectIdCount" parameterType="com.vueSpring.myasset.vo.UserInfoVo" resultType="int">
+        select count(*) from user_info_m uim 
+        where id = #{id}
+    </select>
+
     <insert id="insertUserInfo" parameterType="com.vueSpring.myasset.vo.UserInfoVo">
-    insert into user_info_m
-    (id,pw,use_yn,grade,user_nm,user_age,user_tel,mail_addr,addr ,marketing_yn)
-    values
-    (
-    #{id}
-    ,#{pw}
-    ,'Y'
-    ,'USER'
-    ,#{userNm}
-    ,#{userAge}
-    ,#{userTel}
-    ,#{mailAddr}
-    ,#{addr}
-    ,#{marketingYn}
-    )   
+        insert into user_info_m
+        (id,pw,use_yn,grade,user_nm,user_age,user_tel,mail_addr,addr ,marketing_yn)
+        values
+        (
+        #{id}
+        ,#{pw}
+        ,'Y'
+        ,'USER'
+        ,#{userNm}
+        ,#{userAge}
+        ,#{userTel}
+        ,#{mailAddr}
+        ,#{addr}
+        ,#{marketingYn}
+        )   
     </insert>
 </mapper>

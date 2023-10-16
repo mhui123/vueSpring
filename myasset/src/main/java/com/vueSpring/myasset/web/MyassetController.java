@@ -102,4 +102,23 @@ public class MyassetController {
 
         return resultMap;
     }
+
+    @ResponseBody
+    @PostMapping("/chkIdDuplicate")
+    public Map<String, Object> checkIdDuplicate(@RequestBody Map<String, Object> param) {
+        UserInfoVo vo = new UserInfoVo();
+        vo.setId(String.valueOf(param.get("id")));
+        int regResult = userImpl.getIdCount(vo);
+
+        String toSendResult = "";
+        if (regResult == 0) {
+            toSendResult = "POSSIBLE";
+        } else {
+            toSendResult = "IMPOSSIBLE";
+        }
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("result", toSendResult);
+
+        return resultMap;
+    }
 }
