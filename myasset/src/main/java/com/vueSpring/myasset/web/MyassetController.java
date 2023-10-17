@@ -41,66 +41,30 @@ public class MyassetController {
     }
 
     @ResponseBody
-    @PostMapping("/signin")
-    public boolean signin(@RequestBody Map<String, Object> param) {
-        boolean result = false;
-        return result;
-    }
-
-    @ResponseBody
     @PostMapping("/login")
     public Map<String, Object> login(@RequestBody Map<String, Object> param) {
         log.info("login test");
         UserInfoVo vo = new UserInfoVo();
-        Map<String, Object> resultMap = new HashMap<>();
-
-        log.info("password 암호화 확인 : " + encoder.encode((CharSequence) param.get("pw")));
-
         vo.setId(String.valueOf(param.get("id")));
-        UserInfoVo userData = userImpl.getUserInfo(vo);
+        vo.setPw(String.valueOf(param.get("pw")));
 
-        if (userData != null) {
-            String rawPw = String.valueOf(param.get("pw"));
-            boolean matchResult = encoder.matches(rawPw, String.valueOf(userData.getPw()));
-            if (matchResult) {
-                userData.setPw("");
-                resultMap.put("userData", userData);
-            }
-        } else {
-            // 유저데이터 없음
-            resultMap.put("userData", null);
-        }
-        return resultMap;
+        return userImpl.getUserInfo(vo);
     }
 
     @ResponseBody
     @PostMapping("/register")
     public Map<String, Object> registUser(@RequestBody Map<String, Object> param) {
-        log.info("register!!!!!!!!!!!!!!!!!!!!!");
-        String rawPw = String.valueOf(param.get("pw"));
-        String encPw = encoder.encode(rawPw);
-
-        log.info("encPw : " + encPw);
         UserInfoVo vo = new UserInfoVo();
         vo.setId(String.valueOf(param.get("id")));
-        vo.setPw(encPw);
+        vo.setPw(String.valueOf(param.get("pw")));
         vo.setAddr(String.valueOf(param.get("userAddr")));
         vo.setMailAddr(String.valueOf(param.get("userMail")));
         vo.setUserTel(String.valueOf(param.get("userTel")));
         vo.setUserNm(String.valueOf(param.get("userName")));
         vo.setUserAge(String.valueOf(param.get("userAge")));
         vo.setMarketingYn("Y");
-        int regResult = userImpl.registUser(vo);
-        String toSendResult = "";
-        if (regResult == 1) {
-            toSendResult = "SUCCESS";
-        } else {
-            toSendResult = "FAIL";
-        }
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("result", toSendResult);
 
-        return resultMap;
+        return userImpl.registUser(vo);
     }
 
     @ResponseBody
@@ -108,17 +72,7 @@ public class MyassetController {
     public Map<String, Object> checkIdDuplicate(@RequestBody Map<String, Object> param) {
         UserInfoVo vo = new UserInfoVo();
         vo.setId(String.valueOf(param.get("id")));
-        int regResult = userImpl.getIdCount(vo);
 
-        String toSendResult = "";
-        if (regResult == 0) {
-            toSendResult = "POSSIBLE";
-        } else {
-            toSendResult = "IMPOSSIBLE";
-        }
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("result", toSendResult);
-
-        return resultMap;
+        return userImpl.getIdCount(vo);
     }
 }
